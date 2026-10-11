@@ -401,6 +401,8 @@
       .stats-bar { gap: 1.2rem; }
     }
   </style>
+  <link rel="preconnect" href="https://images.metahub.space">
+  <link rel="dns-prefetch" href="//images.metahub.space">
 </head>
 <body>
   <main>
@@ -440,14 +442,7 @@
 
   <script src="peliculas.js"></script>
   <script>
-  // ── Poster cache using OMDb API (free, no key needed via poster path) ──
-  // We use TMDB image search via IMDb id redirect as poster source
-  // Fallback: OMDB poster URL pattern or placeholder
-
-  function posterUrl(imdbId) {
-    // Use IMDb's own image proxy which redirects to poster
-    return `https://img.omdbapi.com/?i=${imdbId}&apikey=trilogy&h=300`;
-  }
+  // Los pósteres se cargan directamente desde el proveedor actual.
 
   // ── Render ──
   let activeYear = 'all';
@@ -530,6 +525,9 @@
              aria-label="${m.title}">
           <div class="movie-poster-wrap">
             <img class="movie-poster"
+                 loading="${i < 12 ? 'eager' : 'lazy'}"
+                 fetchpriority="${i < 4 ? 'high' : 'auto'}"
+                 decoding="async"
                  src="https://images.metahub.space/poster/medium/${m.imdb_id}/img"
                  alt="${m.title}"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
@@ -575,7 +573,7 @@
     document.getElementById('modalContent').innerHTML = `
       <div class="modal-inner">
         <div class="modal-poster-wrap">
-          <img src="https://images.metahub.space/poster/medium/${m.imdb_id}/img"
+          <img loading="eager" decoding="async" src="https://images.metahub.space/poster/medium/${m.imdb_id}/img"
                alt="${m.title}"
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div class="modal-poster-placeholder" style="display:none">
