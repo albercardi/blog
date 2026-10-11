@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Ejecutar desde la raiz: python tools/actualizar_peliculas.py
-Lee updates/peliculas.csv y genera blog/peliculas/peliculas.js.
+Lee updates/peliculas.csv y genera peliculas/peliculas.js.
 Created es la fecha de incorporacion a la lista, no de visualizacion.
 No necesita paquetes externos ni consulta servicios de imagenes.
 """
@@ -79,7 +79,7 @@ def write_movies(movies, output):
 def main():
     parser = argparse.ArgumentParser(description="Actualizar peliculas desde una exportacion CSV de IMDb")
     parser.add_argument("--csv", type=Path, default=ROOT / "updates" / "peliculas.csv")
-    parser.add_argument("--output", type=Path, default=ROOT / "blog" / "peliculas" / "peliculas.js")
+    parser.add_argument("--output", type=Path, default=ROOT / "peliculas" / "peliculas.js")
     args = parser.parse_args()
     try:
         movies, duplicates = load_movies(args.csv)
