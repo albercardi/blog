@@ -26,13 +26,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Recuperar portadas locales
+      - name: Recuperar URLs de portadas de libros
         uses: actions/cache@v4
         with:
-          path: libros/portadas
-          key: portadas-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .cache/book-covers.json
+          key: goodreads-urls-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            portadas-v1-${{ github.ref_name }}-
+            goodreads-urls-v1-${{ github.ref_name }}-
 
       - name: Verificar archivos necesarios
         run: |
@@ -66,16 +66,16 @@ jobs:
           js = Path("libros/libros.js").read_text(encoding="utf-8")
           match = re.search(r"\bconst\s+BOOKS\s*=\s*", js)
           if not match:
-              raise SystemExit("No se encontró la lista BOOKS.")
+              raise SystemExit("No se encontró BOOKS.")
           books, _ = json.JSONDecoder().raw_decode(js[match.end():].lstrip())
           if not books:
               raise SystemExit("La lista de libros está vacía.")
-          print(f"Libros preparados: {len(books)}")
-          print(f"Con portada: {sum(bool(b.get('cover')) for b in books)}")
           for book in books:
               cover = book.get("cover", "")
-              if cover and (not cover.startswith("portadas/") or not (Path("libros") / cover).is_file()):
-                  raise SystemExit(f"Portada local ausente o inválida: {cover}")
+              if cover and not cover.startswith(("https://", "http://")):
+                  raise SystemExit("Se esperaba una URL directa de portada.")
+          print(f"Libros preparados: {len(books)}")
+          print(f"Con portada directa: {sum(bool(b.get('cover')) for b in books)}")
           PY
 
       - name: Verificar datos y enlace de peliculas
@@ -101,7 +101,7 @@ jobs:
       - name: Preparar archivos del sitio
         run: |
           mkdir -p "$RUNNER_TEMP/sitio"
-          rsync -a --exclude='.git/' --exclude='.github/' --exclude='tools/' --exclude='updates/' ./ "$RUNNER_TEMP/sitio/"
+          rsync -a --exclude='.git/' --exclude='.cache/' --exclude='libros/portadas/' --exclude='.github/' --exclude='tools/' --exclude='updates/' ./ "$RUNNER_TEMP/sitio/"
           cmp libros/libros.js "$RUNNER_TEMP/sitio/libros/libros.js"
           cmp peliculas/peliculas.js "$RUNNER_TEMP/sitio/peliculas/peliculas.js"
 
