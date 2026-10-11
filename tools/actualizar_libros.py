@@ -10,8 +10,8 @@ Guardalo en updates/goodreads_library_export.csv y ejecutá desde la raíz:
 
 El script:
   1. Lee el CSV de Goodreads
-  2. Descarga y guarda portadas locales; reutiliza las disponibles
-  3. Genera libros/libros.js para publicar con el workflow
+  2. Obtiene URLs de portadas de Goodreads (no guarda imágenes locales)
+  3. Regenera libros.js listo para subir a GitHub Pages
 """
 
 import csv
@@ -68,17 +68,16 @@ def clean_isbn(raw):
     return raw.replace('="', '').replace('"', '').strip()
 
 
-COVER_DIR = REPO_ROOT / "libros" / "portadas"
-MAX_IMAGE_BYTES = 12 * 1024 * 1024
+COVER_CACHE = REPO_ROOT / ".cache" / "book-covers.json"
 
 
 class CoverParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.candidates = []
-        self.blocks = []
-        self.parts = []
+        self.json_blocks = []
         self.in_json = False
+        self.parts = []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
@@ -86,10 +85,7 @@ class CoverParser(HTMLParser):
             key = (attrs.get("property") or attrs.get("name") or "").lower()
             if key in ("og:image", "twitter:image", "twitter:image:src"):
                 self.candidates.append(attrs.get("content", ""))
-        if tag == "img" and (
-            attrs.get("id") == "coverImage"
-            or "ResponsiveImage" in attrs.get("class", "")
-        ):
+        if tag == "img" and (attrs.get("id") == "coverImage" or "ResponsiveImage" in attrs.get("class", "")):
             self.candidates.append(attrs.get("src") or attrs.get("data-src") or "")
         if tag == "script" and attrs.get("type", "").lower() == "application/ld+json":
             self.in_json = True
@@ -101,7 +97,7 @@ class CoverParser(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag == "script" and self.in_json:
-            self.blocks.append("".join(self.parts))
+            self.json_blocks.append("".join(self.parts))
             self.in_json = False
             self.parts = []
 
@@ -129,85 +125,53 @@ def book_images(data):
         if "Book" in kinds:
             yield from image_values(data.get("image"))
         for value in data.values():
-            if isinstance(value, (list, dict)):
+            if isinstance(value, (dict, list)):
                 yield from book_images(value)
 
 
-def image_extension(data):
-    if data.startswith(b"\xff\xd8\xff"):
-        return ".jpg"
-    if data.startswith(b"\x89PNG\r\n\x1a\n"):
-        return ".png"
-    if data.startswith((b"GIF87a", b"GIF89a")):
-        return ".gif"
-    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
-        return ".webp"
-    if len(data) >= 16 and data[4:8] == b"ftyp" and data[8:12] in (b"avif", b"avis"):
-        return ".avif"
-    return ""
+def cover_url(value):
+    if not isinstance(value, str):
+        return ""
+    value = html_module.unescape(value).strip()
+    if value.startswith("//"):
+        value = "https:" + value
+    if not value.startswith(("https://", "http://")):
+        return ""
+    if any(word in value.lower() for word in ("nophoto", "transparent", "noimage")):
+        return ""
+    return value
 
 
-def previous_covers():
-    if not OUTPUT_FILE.is_file():
-        return {}
-    try:
-        source = OUTPUT_FILE.read_text(encoding="utf-8")
-        match = re.search(r"\b(?:const|let|var)\s+BOOKS\s*=\s*", source)
-        if not match:
-            return {}
-        data, _ = json.JSONDecoder().raw_decode(source[match.end():].lstrip())
-        return {str(b["id"]): b.get("cover", "") for b in data if isinstance(b, dict) and "id" in b}
-    except (OSError, ValueError, TypeError) as error:
-        print(f"Aviso: no se pudo leer la lista anterior: {error}")
-        return {}
-
-
-def local_cover(book_id):
-    for ext in (".jpg", ".png", ".webp", ".gif", ".avif"):
-        path = COVER_DIR / (book_id + ext)
-        if path.is_file():
-            with path.open("rb") as handle:
-                head = handle.read(32)
-            if image_extension(head) == ext:
-                return "portadas/" + path.name
-    return ""
-
-
-def save_cover(book_id, url):
-    url = html_module.unescape(url or "").strip()
-    if url.startswith("//"):
-        url = "https:" + url
-    if not url.startswith(("https://", "http://")):
-        raise ValueError("La portada anterior no es una URL descargable.")
-    if any(word in url.lower() for word in ("nophoto", "transparent", "noimage")):
-        raise ValueError("La URL corresponde a una imagen de reemplazo.")
-    request = urllib.request.Request(url, headers=HEADERS)
-    with urllib.request.urlopen(request, timeout=15) as response:
-        data = response.read(MAX_IMAGE_BYTES + 1)
-    if len(data) > MAX_IMAGE_BYTES:
-        raise ValueError("Imagen demasiado grande.")
-    extension = image_extension(data)
-    if not extension:
-        raise ValueError("La respuesta no tiene una firma de imagen reconocida.")
-    COVER_DIR.mkdir(parents=True, exist_ok=True)
-    target = COVER_DIR / (book_id + extension)
-    temporary = target.with_suffix(extension + ".tmp")
-    temporary.write_bytes(data)
-    temporary.replace(target)
-    return "portadas/" + target.name
-
-
-def fetch_cover(book_id, previous=""):
-    cached = local_cover(book_id)
-    if cached:
-        return cached, "local"
-    errors = []
-    if previous.startswith(("https://", "http://", "//")):
+def load_cover_cache():
+    cache = {}
+    if OUTPUT_FILE.is_file():
         try:
-            return save_cover(book_id, previous), "portada anterior descargada"
-        except Exception as error:
-            errors.append(f"portada anterior: {error}")
+            source = OUTPUT_FILE.read_text(encoding="utf-8")
+            match = re.search(r"\b(?:const|let|var)\s+BOOKS\s*=\s*", source)
+            if match:
+                data, _ = json.JSONDecoder().raw_decode(source[match.end():].lstrip())
+                for book in data:
+                    if isinstance(book, dict) and "id" in book:
+                        value = cover_url(book.get("cover"))
+                        if value:
+                            cache[str(book["id"])] = value
+        except (OSError, ValueError, TypeError) as error:
+            print(f"Aviso: lista anterior no legible: {error}")
+    if COVER_CACHE.is_file():
+        try:
+            data = json.loads(COVER_CACHE.read_text(encoding="utf-8"))
+            if isinstance(data, dict):
+                for key, value in data.items():
+                    url = cover_url(value)
+                    if url:
+                        cache[str(key)] = url
+        except (OSError, ValueError) as error:
+            print(f"Aviso: caché no legible: {error}")
+    return cache
 
+
+def fetch_cover(book_id):
+    errors = []
     for attempt in range(2):
         try:
             request = urllib.request.Request(
@@ -218,33 +182,26 @@ def fetch_cover(book_id, previous=""):
             parser = CoverParser()
             parser.feed(source)
             candidates = []
-            for block in parser.blocks:
+            for block in parser.json_blocks:
                 try:
                     candidates.extend(book_images(json.loads(block)))
                 except (ValueError, TypeError):
-                    pass
-            candidates.extend(parser.candidates)
-            tried = set()
-            for candidate in candidates:
-                if not candidate or candidate in tried:
                     continue
-                tried.add(candidate)
-                try:
-                    return save_cover(book_id, candidate), "Goodreads"
-                except Exception as error:
-                    errors.append(f"descarga de imagen: {error}")
-            if not candidates:
-                errors.append("La página recibida no contiene una portada reconocible.")
-            break
+            candidates.extend(parser.candidates)
+            for candidate in candidates:
+                url = cover_url(candidate)
+                if url:
+                    return url, ""
+            return "", "La respuesta no contiene una portada reconocible."
         except urllib.error.HTTPError as error:
-            errors.append(f"Goodreads: HTTP {error.code}")
+            errors.append(f"HTTP {error.code}")
             if error.code in (403, 404, 429):
                 break
         except Exception as error:
-            errors.append(f"Goodreads: {type(error).__name__}: {error}")
+            errors.append(f"{type(error).__name__}: {error}")
         if attempt == 0:
             time.sleep(2)
-    return "", "; ".join(errors[-3:]) or "No se obtuvo una imagen."
+    return "", "; ".join(errors)
 
 
 # ── Lectura del CSV ─────────────────────────────────────────────────────────────
@@ -314,27 +271,33 @@ def load_books(csv_path):
 # ── Descarga de portadas ────────────────────────────────────────────────────────
 
 def fetch_all_covers(books):
-    previous = previous_covers()
-    print(f"Buscando o recuperando portadas para {len(books)} libros...")
+    cache = load_cover_cache()
+    pending = []
+    for book in books:
+        book['cover'] = cache.get(book['id'], '')
+        if not book['cover']:
+            pending.append(book)
+    print(f"URLs anteriores reutilizadas: {len(books) - len(pending)}")
+    print(f"Portadas que se consultarán en Goodreads: {len(pending)}")
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {
-            executor.submit(fetch_cover, b['id'], previous.get(b['id'], '')): b
-            for b in books
-        }
-        found = 0
+        futures = {executor.submit(fetch_cover, b['id']): b for b in pending}
         for done, future in enumerate(as_completed(futures), 1):
             book = futures[future]
             try:
-                cover, detail = future.result()
-            except Exception as error:
-                cover, detail = '', f'{type(error).__name__}: {error}'
-            book['cover'] = cover
-            if cover:
-                found += 1
+                url, error = future.result()
+            except Exception as exc:
+                url, error = '', str(exc)
+            book['cover'] = url
+            if url:
+                cache[book['id']] = url
             else:
-                print(f"SIN PORTADA: {book['id']} — {book['title']}: {detail}")
-            if done % 20 == 0 or done == len(books):
-                print(f"{done}/{len(books)} procesados; {found} portadas disponibles")
+                print(f"SIN PORTADA: {book['id']} — {book['title']}: {error}")
+            if done % 20 == 0 or done == len(pending):
+                print(f"Consultados: {done}/{len(pending)}")
+    COVER_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    temporary = COVER_CACHE.with_suffix('.json.tmp')
+    temporary.write_text(json.dumps(cache, ensure_ascii=False), encoding='utf-8')
+    temporary.replace(COVER_CACHE)
     return books
 
 
@@ -360,9 +323,11 @@ var COVER_ERR = "this.style.display='none';this.nextElementSibling.style.display
 
 function cardCoverHTML(b) {{
   var t = esc(b.title);
+  var idx = BOOKS.indexOf(b);
+  var imageAttrs = ' decoding="async" loading="' + (idx < 12 ? 'eager' : 'lazy') + '" fetchpriority="' + (idx < 4 ? 'high' : 'auto') + '"';
   if (b.cover) {{
     return '<div class="book-cover-wrap">'
-      + '<img class="book-cover" src="' + esc(b.cover) + '" alt="' + t + '" loading="lazy" onerror="' + COVER_ERR + '">'
+      + '<img class="book-cover" src="' + esc(b.cover) + '" alt="' + t + '"' + imageAttrs + ' onerror="' + COVER_ERR + '">'
       + '<div class="book-cover-placeholder" style="display:none"><span>' + t + '</span></div>'
       + '</div>';
   }}
@@ -484,6 +449,20 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) {{
 }});
 document.addEventListener('keydown', function(e) {{ if (e.key === 'Escape') closeModal(); }});
 
+var coverHosts = {{}};
+BOOKS.slice(0, 12).forEach(function(book) {{
+  if (!book.cover) return;
+  try {{
+    var origin = new URL(book.cover).origin;
+    if (!coverHosts[origin]) {{
+      coverHosts[origin] = true;
+      var link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = origin;
+      document.head.appendChild(link);
+    }}
+  }} catch (error) {{}}
+}});
 renderBooks();
 """
 
@@ -506,7 +485,7 @@ def main():
     print(f"  {len(books)} libros encontrados")
 
     if not books:
-        raise ValueError("No hay libros seleccionados; se evita vaciar el sitio.")
+        raise ValueError("No hay libros seleccionados; no se vacía el sitio.")
 
     books.sort(key=lambda b: b['_sort'], reverse=True)
 
