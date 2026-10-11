@@ -29,24 +29,24 @@ jobs:
       - name: Verificar archivos necesarios
         run: |
           test -f index.html
-          test -f blog/libros/index.html
+          test -f libros/index.html
           test -s updates/goodreads_library_export.csv
           test -f tools/actualizar_libros.py
-          test -f blog/peliculas/index.html
+          test -f peliculas/index.html
           test -s updates/peliculas.csv
           test -f tools/actualizar_peliculas.py
 
       - name: Actualizar libros
         run: |
           python tools/actualizar_libros.py
-          test -s blog/libros/libros.js
-          node --check blog/libros/libros.js
+          test -s libros/libros.js
+          node --check libros/libros.js
 
       - name: Actualizar peliculas
         run: |
           python tools/actualizar_peliculas.py
-          test -s blog/peliculas/peliculas.js
-          node --check blog/peliculas/peliculas.js
+          test -s peliculas/peliculas.js
+          node --check peliculas/peliculas.js
 
       - name: Verificar datos y enlace de peliculas
         run: |
@@ -54,11 +54,11 @@ jobs:
           import json
           import re
           from pathlib import Path
-          html = Path("blog/peliculas/index.html").read_text(encoding="utf-8")
+          html = Path("peliculas/index.html").read_text(encoding="utf-8")
           sources = re.findall(r'<script\b[^>]*\bsrc\s*=\s*[\'"]([^\'"]+)[\'"]', html, flags=re.I)
-          if not any(s.split("?", 1)[0] in ("peliculas.js", "./peliculas.js", "/blog/peliculas/peliculas.js") for s in sources):
+          if not any(s.split("?", 1)[0] in ("peliculas.js", "./peliculas.js", "/blog/peliculas/peliculas.js", "/peliculas/peliculas.js") for s in sources):
               raise SystemExit("El HTML no carga peliculas.js. Revisar la etiqueta script.")
-          js = Path("blog/peliculas/peliculas.js").read_text(encoding="utf-8")
+          js = Path("peliculas/peliculas.js").read_text(encoding="utf-8")
           movies = json.JSONDecoder().raw_decode(js.split("const MOVIES =", 1)[1].lstrip())[0]
           print(f"Titulos preparados para publicar: {len(movies)}")
           for movie in movies[:5]:
@@ -72,7 +72,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/sitio"
           rsync -a --exclude='.git/' --exclude='.github/' --exclude='tools/' --exclude='updates/' ./ "$RUNNER_TEMP/sitio/"
-          cmp blog/peliculas/peliculas.js "$RUNNER_TEMP/sitio/blog/peliculas/peliculas.js"
+          cmp peliculas/peliculas.js "$RUNNER_TEMP/sitio/peliculas/peliculas.js"
 
       - name: Subir sitio preparado
         uses: actions/upload-pages-artifact@v3
