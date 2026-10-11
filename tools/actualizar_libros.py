@@ -28,7 +28,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-OUTPUT_FILE = REPO_ROOT / "blog" / "libros" / "libros.js"
+OUTPUT_FILE = REPO_ROOT / "libros" / "libros.js"
 DEFAULT_CSV = REPO_ROOT / "updates" / "goodreads_library_export.csv"
 MAX_WORKERS = 8          # peticiones paralelas a Goodreads
 DELAY       = 0.12       # segundos entre peticiones
