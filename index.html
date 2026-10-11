@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Albertina C</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #777777;
+      --link-hover: #B33820;
+      --accent: #f4c2c2; /* color del círculo */
+      --max-width: 800px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 6rem 1.4rem 4rem; /* TODO MÁS ABAJO */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 17px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .page {
+      width: 100%;
+      max-width: var(--max-width);
+    }
+
+    /* Cabecera con círculo encima del nombre */
+    header {
+      margin-top: 0.5rem;
+      margin-bottom: 2.8rem;
+      text-align: left;
+    }
+
+    .avatar-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2.1rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    header p {
+      margin-bottom: 0.4rem;
+    }
+
+    header p.muted {
+      color: var(--muted);
+    }
+
+    /* Estilo general de links: mismo color que el texto, solo cambian en hover */
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    /* Lista de posts */
+    .posts-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .posts {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .posts li + li {
+      margin-top: 0.8rem;
+    }
+
+    .post-meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-left: 0.4rem;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 4.5rem 1.1rem 3rem;
+      }
+
+      header h1 {
+        font-size: 1.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- Cabecera con círculo encima del nombre -->
+    <header>
+      <div class="avatar-dot"></div>
+
+      <h1>Hola! Soy Albertina</h1>
+      <p>Sobreviviente de una pandemia y orgullosa hincha de Boca.</p>
+      <p>Amo a los animales, el chocolate , el invierno.</p>
+      <p>Soy médica especialista en <a href="/" target="_blank" rel="noopener noreferrer">oftalmología</a>, pero mi curiosidad suele mirar hacia otros lados.</p>
+      <p>Cuando puedo, escribo. Algunas de esas cosas viven <a href="mesadeentrada/index.html">
+    acá.</a></p>
+      <p>También hago listas aunque no siempre las actualizo. Los <a href="libros/index.html" rel="noopener noreferrer">
+    libros que leí</a>, las <a href="peliculas/index.html" rel="noopener noreferrer"> peliculas que me gustaron</a>, cosas a las que quiero volver y <a href="enlaces.html" target="_blank" rel="noopener noreferrer"> sitios que mi inspiran.</a></p>
+      <p>De fondo, siempre hay música: para los días comunes, las historias a medio escribir y las cosas que todavía no sé nombrar.</p>
+      <p> Este sitio se va haciendo con lo que aparece en el camino, una frase, una historia, una canción, una pregunta y la promesa de volver a ellas más adelante. </p>
+      <p class="muted">
+       Y como yo, seguirá siempre en construcción.
+      </p>
+
+    </header>
+
+ 
