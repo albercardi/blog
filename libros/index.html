@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Albertina C · Libros</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Work+Sans:wght@300..700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #777777;
+      --border: #e0e0e0;
+      --accent: #B33820;
+      --surface: #f7f6f3;
+      --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.14);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 2.5rem 1.4rem 4rem;
+      font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      justify-content: center;
+    }
+
+    main {
+      width: 100%;
+      max-width: 860px;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      margin-bottom: 2.4rem;
+      text-align: center;
+    }
+    .site-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 2.2rem;
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+    .site-tagline {
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-style: italic;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+    .site-tagline cite {
+      font-style: normal;
+      font-size: 0.82rem;
+      display: block;
+      margin-top: 0.25rem;
+      color: var(--muted);
+      opacity: 0.75;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: var(--accent); }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .back-link:hover { color: var(--accent); text-decoration: underline; }
+
+    /* ── Stats ── */
+    .stats-bar {
+      display: flex;
+      gap: 1.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.6rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat { display: flex; flex-direction: column; gap: 0.1rem; }
+    .stat-value {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.7rem;
+      line-height: 1;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Filters ── */
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.8rem;
+      align-items: center;
+    }
+    .filter-label { font-size: 0.82rem; color: var(--muted); margin-right: 0.2rem; }
+    .filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.28rem 0.85rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 160ms ease;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── Grid ── */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1.4rem 1.2rem;
+    }
+
+    /* ── Card ── */
+    .book-card {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .book-card:focus-visible .book-cover-wrap {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .book-cover-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: var(--surface);
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: box-shadow 200ms ease, transform 200ms ease;
+    }
+    .book-card:hover .book-cover-wrap {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-3px);
+    }
+    .book-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .book-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem;
+      background: linear-gradient(145deg, #f0eee9 0%, #e8e5df 100%);
+    }
+    .book-cover-placeholder span {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.73rem;
+      text-align: center;
+      color: #888;
+      line-height: 1.35;
+    }
+
+    .book-stars { display: flex; gap: 1px; margin: 0.5rem 0 0.18rem; }
+    .star { font-size: 0.7rem; color: #ddd; }
+    .star.filled { color: var(--accent); }
+
+    .book-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .book-author {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.12rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .book-meta {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--bg);
+      border-radius: 6px;
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.8rem;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      line-height: 1;
+      transition: color 150ms;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-inner { display: flex; gap: 1.4rem; align-items: flex-start; }
+
+    .modal-cover-wrap {
+      flex-shrink: 0;
+      width: 105px;
+      aspect-ratio: 2/3;
+      border-radius: 3px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+    }
+    .modal-cover-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .modal-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem;
+      background: linear-gradient(145deg, #f0eee9 0%, #e8e5df 100%);
+    }
+    .modal-cover-placeholder span {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 0.78rem;
+      text-align: center;
+      color: #888;
+    }
+
+    .modal-info { flex: 1; min-width: 0; }
+    .modal-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.22rem;
+      line-height: 1.25;
+      margin-bottom: 0.22rem;
+    }
+    .modal-author { font-size: 0.88rem; color: var(--muted); margin-bottom: 0.55rem; }
+    .modal-stars { display: flex; gap: 2px; margin-bottom: 0.7rem; }
+    .modal-stars .star { font-size: 0.88rem; }
+    .modal-details {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      margin-bottom: 0.75rem;
+    }
+    .modal-review {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #333;
+      font-style: italic;
+      border-left: 2px solid var(--accent);
+      padding-left: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .modal-link {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: var(--accent);
+      text-decoration: underline;
+    }
+    .modal-link:hover { color: var(--text); }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .site-title { font-size: 1.7rem; }
+      .books-grid { grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 1rem 0.8rem; }
+      .modal-inner { flex-direction: column; }
+      .modal-cover-wrap { width: 90px; }
+      .stats-bar { gap: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="site-header">
+      <h1 class="site-title">Tinta y piedra</h1>
+      <p class="site-tagline">
+        Leo por si algún día me invitan a una conversación.
+      </p>
+    </header>
+
+    <a href="/blog/" class="back-link">← Volver al inicio</a>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Año:</span>
+      <div id="filterBtns" style="display:flex;gap:0.5rem;flex-wrap:wrap;"></div>
+    </div>
+
+    <div id="booksContainer"></div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Detalle del libro">
+    <div class="modal">
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="libros.js"></script>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

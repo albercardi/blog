@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Frankenstein geográfico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+:root {
+
+  --bg: #ffffff; /* o #fdfdfd si querés un toque menos puro */
+  --text: #111111;
+  --muted: #777777;
+  --link: #0645ad;
+  --max-width: 980px;
+}
+
+
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 2.5rem 1.4rem 3rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      display: flex;
+      justify-content: center;
+    }
+
+    main {
+      width: 100%;
+      max-width: 780px;
+    }
+
+    header {
+      margin-bottom: 1.8rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.4rem 0;
+      font-size: 1.9rem;
+      font-weight: 600;
+    }
+
+    .post-meta {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    article {
+      font-size: 1rem;
+    }
+
+    article h2,
+    article h3,
+    article h4 {
+      font-weight: 600;
+      margin-top: 1.8rem;
+      margin-bottom: 0.6rem;
+    }
+
+    article h2 {
+      font-size: 1.25rem;
+    }
+
+    article h3 {
+      font-size: 1.05rem;
+    }
+
+    article p {
+      margin: 0 0 1rem 0;
+    }
+
+    article ul,
+    article ol {
+      margin: 0 0 1rem 0;
+      padding-left: 1.3rem;
+    }
+
+    article li + li {
+      margin-top: 0.15rem;
+    }
+
+    article blockquote {
+      margin: 0 0 1rem 0;
+      padding-left: 0.9rem;
+      border-left: 3px solid #dddddd;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    article code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92em;
+      background: #f0f0f0;
+      padding: 0.05rem 0.25rem;
+      border-radius: 3px;
+    }
+
+    article pre {
+      margin: 0 0 1rem 0;
+      padding: 0.7rem 0.9rem;
+      background: #f0f0f0;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      border-radius: 4px;
+    }
+
+    article pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #dddddd;
+      margin: 1.6rem 0;
+    }
+
+    .back-link a,
+.back-link a:visited {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.back-link a:hover,
+.back-link a:active {
+  color: #B33820;
+  text-decoration: underline;
+}
+    @media (max-width: 720px) {
+      body {
+        padding: 1.8rem 1.1rem 2.5rem;
+      }
+
+      header h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Frankenstein geográfico</h1>
+      <p class="post-meta">01 de diciembre de 2025 · AI · Literatura</p>
+    </header>
+
+    <article>
+  <p>
+    Leyendo el libro me puse a pensar en los lugares que eligio Mary Shelley. ¿Porque siguió Victor tan lejos?. ¿Qué buscaba realemente?. ¿Qué significaba el hogar?, ¿y alejarse de este?. La AI me ayudo a crear este mapa interactivo con las referencias geograficas.
+  </p>
+
+
+  <iframe title="Mapa interactivo de Frankenstein" width="100%" height="520" style="display: block; border: 0;" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;es&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;Lugares de Frankenstein - Mapa Interactivo&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;https://unpkg.com/leaflet@1.9.4/dist/leaflet.css&quot; /&gt;
+    &lt;style&gt;
+        :root {
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+
+  --font-family-base: &quot;FKGroteskNeue&quot;, &quot;Geist&quot;, &quot;Inter&quot;, -apple-system,
+    BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, sans-serif;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  --radius-base: 8px;
+  --radius-lg: 12px;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
+
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+  }
+}
+
+@font-face {
+  font-family: &#x27;FKGroteskNeue&#x27;;
+  src: url(&#x27;https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2&#x27;)
+    format(&#x27;woff2&#x27;);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.5;
+}
+
+.header {
+    background-color: var(--color-surface);
+    padding: var(--space-20) var(--space-24);
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+}
+
+.header h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.map-container {
+    width: 100%;
+    height: calc(100vh - 80px);
+    position: relative;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.legend {
+    position: absolute;
+    bottom: var(--space-20);
+    right: var(--space-20);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: var(--space-16);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    min-width: 180px;
+    border: 1px solid var(--color-card-border);
+}
+
+@media (prefers-color-scheme: dark) {
+    .legend {
+        background-color: rgba(38, 40, 40, 0.95);
+    }
+}
+
+.legend h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-12);
+    color: var(--color-text);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-8);
+    font-size: var(--font-size-base);
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: var(--space-12);
+    border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.legend-color.blue {
+    background-color: #3498db;
+}
+
+.legend-color.green {
+    background-color: #27ae60;
+}
+
+.legend-color.red {
+    background-color: #e74c3c;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: var(--radius-base);
+    font-family: var(--font-family-base);
+}
+
+.leaflet-popup-content {
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+}
+
+.leaflet-popup-content strong {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.popup-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-8);
+    color: var(--color-text);
+}
+
+.popup-detail {
+    margin: var(--space-4) 0;
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .map-container {
+        height: calc(100vh - 70px);
+    }
+    
+    .legend {
+        bottom: var(--space-12);
+        right: var(--space-12);
+        padding: var(--space-12);
+        min-width: 150px;
+    }
+    
+    .legend h3 {
+        font-size: var(--font-size-base);
+    }
+    
+    .legend-item {
+        font-size: 12px;
+    }
+}
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class=&quot;header&quot;&gt;
+        &lt;h1&gt;Lugares mencionados en Frankenstein de Mary Shelley&lt;/h1&gt;
+    &lt;/div&gt;
+    
+    &lt;div class=&quot;map-container&quot;&gt;
+        &lt;div id=&quot;map&quot;&gt;&lt;/div&gt;
+        
+        &lt;div class=&quot;legend&quot;&gt;
+            &lt;h3&gt;Leyenda&lt;/h3&gt;
+            &lt;div class=&quot;legend-item&quot;&gt;
+                &lt;div class=&quot;legend-color blue&quot;&gt;&lt;/div&gt;
+                &lt;span&gt;Ciudades&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;legend-item&quot;&gt;
+                &lt;div class=&quot;legend-color red&quot;&gt;&lt;/div&gt;
+                &lt;span&gt;Regiones/Barrios&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;legend-item&quot;&gt;
+                &lt;div class=&quot;legend-color green&quot;&gt;&lt;/div&gt;
+                &lt;span&gt;Características Naturales&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src=&quot;https://unpkg.com/leaflet@1.9.4/dist/leaflet.js&quot;&gt;&lt;/script&gt;
+    &lt;script&gt;
+        // Locations data
+        const locations = [
+            { lugar: &quot;Ginebra&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Suiza&quot;, lat: 46.2044, lon: 6.1432 },
+            { lugar: &quot;Ingolstadt&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Alemania&quot;, lat: 48.7665, lon: 11.4257 },
+            { lugar: &quot;Londres&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Inglaterra&quot;, lat: 51.5074, lon: -0.1278 },
+            { lugar: &quot;Oxford&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Inglaterra&quot;, lat: 51.7520, lon: -1.2577 },
+            { lugar: &quot;Edimburgo&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Escocia&quot;, lat: 55.9533, lon: -3.1883 },
+            { lugar: &quot;Islas Orcadas&quot;, tipo: &quot;Región&quot;, pais: &quot;Escocia&quot;, lat: 59.0000, lon: -3.0000 },
+            { lugar: &quot;París&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Francia&quot;, lat: 48.8566, lon: 2.3522 },
+            { lugar: &quot;Lyon&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Francia&quot;, lat: 45.7640, lon: 4.8357 },
+            { lugar: &quot;Chambéry&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Francia&quot;, lat: 45.5647, lon: 5.9178 },
+            { lugar: &quot;Evian&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Francia&quot;, lat: 46.4008, lon: 6.5886 },
+            { lugar: &quot;Nápoles&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Italia&quot;, lat: 40.8518, lon: 14.2681 },
+            { lugar: &quot;San Petersburgo&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Rusia&quot;, lat: 59.9343, lon: 30.3351 },
+            { lugar: &quot;Arkhangelsk&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Rusia&quot;, lat: 64.5401, lon: 40.5433 },
+            { lugar: &quot;Plainpalais&quot;, tipo: &quot;Barrio&quot;, pais: &quot;Suiza&quot;, lat: 46.1974, lon: 6.1389 },
+            { lugar: &quot;Dublín&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Irlanda&quot;, lat: 53.3498, lon: -6.2603 },
+            { lugar: &quot;Darmstadt&quot;, tipo: &quot;Ciudad&quot;, pais: &quot;Alemania&quot;, lat: 49.8728, lon: 8.6512 },
+            { lugar: &quot;Lago Lemán&quot;, tipo: &quot;Lago&quot;, pais: &quot;Suiza/Francia&quot;, lat: 46.4530, lon: 6.5400 },
+            { lugar: &quot;Mont Blanc&quot;, tipo: &quot;Montaña&quot;, pais: &quot;Francia/Italia&quot;, lat: 45.8326, lon: 6.8652 },
+            { lugar: &quot;Alpes&quot;, tipo: &quot;Cordillera&quot;, pais: &quot;Múltiples&quot;, lat: 46.5000, lon: 8.0000 },
+            { lugar: &quot;Océano Ártico&quot;, tipo: &quot;Océano&quot;, pais: &quot;Región Polar&quot;, lat: 85.0000, lon: 0.0000 }
+        ];
+
+        // Initialize map centered on Europe
+        const map = L.map(&#x27;map&#x27;).setView([55, 10], 4);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer(&#x27;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&#x27;, {
+            attribution: &#x27;&amp;copy; &lt;a href=&quot;https://www.openstreetmap.org/copyright&quot; target=&quot;_blank&quot;&gt;OpenStreetMap&lt;/a&gt; contributors&#x27;,
+            maxZoom: 18,
+            minZoom: 3
+        }).addTo(map);
+
+        // Function to determine marker color based on type
+        function getMarkerColor(tipo) {
+            if (tipo === &quot;Ciudad&quot;) {
+                return &#x27;#3498db&#x27;; // Blue
+            } else if (tipo === &quot;Región&quot; || tipo === &quot;Barrio&quot;) {
+                return &#x27;#e74c3c&#x27;; // Red
+            } else {
+                return &#x27;#27ae60&#x27;; // Green for natural features
+            }
+        }
+
+        // Create custom icon function
+        function createCustomIcon(color) {
+            return L.divIcon({
+                className: &#x27;custom-marker&#x27;,
+                html: `&lt;div style=&quot;background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);&quot;&gt;&lt;/div&gt;`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12],
+                popupAnchor: [0, -12]
+            });
+        }
+
+        // Add markers for each location
+        locations.forEach(location =&gt; {
+            const color = getMarkerColor(location.tipo);
+            const icon = createCustomIcon(color);
+            
+            const marker = L.marker([location.lat, location.lon], { icon: icon })
+                .addTo(map);
+            
+            // Create popup content
+            const popupContent = `
+                &lt;div class=&quot;popup-title&quot;&gt;${location.lugar}&lt;/div&gt;
+                &lt;div class=&quot;popup-detail&quot;&gt;&lt;strong&gt;Tipo:&lt;/strong&gt; ${location.tipo}&lt;/div&gt;
+                &lt;div class=&quot;popup-detail&quot;&gt;&lt;strong&gt;País:&lt;/strong&gt; ${location.pais}&lt;/div&gt;
+            `;
+            
+            marker.bindPopup(popupContent);
+            
+            // Add permanent tooltip (label) for the location
+            marker.bindTooltip(location.lugar, {
+                permanent: true,
+                direction: &#x27;top&#x27;,
+                className: &#x27;location-label&#x27;,
+                offset: [0, -12]
+            });
+        });
+
+        // Add custom styles for tooltips
+        const style = document.createElement(&#x27;style&#x27;);
+        style.textContent = `
+            .location-label {
+                background-color: transparent;
+                border: none;
+                box-shadow: none;
+                font-weight: 600;
+                font-size: 12px;
+                color: #2c3e50;
+                text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+                white-space: nowrap;
+            }
+            
+            @media (prefers-color-scheme: dark) {
+                .location-label {
+                    color: #ecf0f1;
+                    text-shadow: 1px 1px 2px #1f2121, -1px -1px 2px #1f2121, 1px -1px 2px #1f2121, -1px 1px 2px #1f2121;
+                }
+            }
+            
+            .leaflet-tooltip-top:before,
+            .leaflet-tooltip-bottom:before,
+            .leaflet-tooltip-left:before,
+            .leaflet-tooltip-right:before {
+                display: none;
+            }
+        `;
+        document.head.appendChild(style);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+
+  <hr>
+
+  <p>
+ En la elección de los lugares se puede leer una tensión entre lo conocido y lo desconocido: algunos espacios, como Suiza, condensan la idea de refugio, familia y seguridad, mientras que otros, en cambio, se sienten lejanos, extraños. El recorrido de Víctor en busca de su criatura no es solo un desplazamiento físico, sino funciona también como una búsqueda interior qué implica sobrepasar ciertos límites, ya sean científicos, geográficos o morales. Así, el mapa de la novela se convierte en un mapa del impulso humano por ir más allá de lo permitido. Pero al mismo tiempo muestra el costo afectivo de hacerlo sin hacerse cargo de las consecuencias: cuando no hay responsabilidad, cuidado ni palabra, lo que queda es un enorme vacío emocional alrededor de lo creado. Y los lugares "seguros" se transforman en espacios de verguenza y culpa empujandolo cada vez mas lejos, hasta que ya no puede regresar.
+  </p>
+</article>
+
+
+    <p class="back-link">
+      ← <a href="blogpersonal/index.html">Volver al índice</a>
+    </p>
+  </main>
+</body>
+</html>
